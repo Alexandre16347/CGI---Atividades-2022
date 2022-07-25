@@ -104,12 +104,19 @@ cores = (
     (0, 0, 1)
 )
 
+textureCoordinates = (
+    (0, 0),
+    (0, 1),
+    (1, 1),
+    (1, 0)
+)
+
 
 def carregaTextura():
-    textureSurface = pygame.image.load('metal.jpg')
+    textureSurface = pygame.image.load('vidro.jpg')
     textureData = pygame.image.tostring(textureSurface, "RGBA", 1)
     width = textureSurface.get_width()
-    height = textureSurface.get_hegth()
+    height = textureSurface.get_height()
 
     glEnable(GL_TEXTURE_2D)
     texid = glGenTextures(1)
@@ -127,13 +134,15 @@ def carregaTextura():
 
 
 def Ampulheta():
+    glColor3f(1, 1, 1)
     glBegin(GL_QUADS)
     for i_surface, surface in enumerate(superficie):
         x = 0
         glNormal3fv(normals[i_surface])
-        for vertex in surface:
+        for i_vertex, vertex in enumerate(surface):
             x += 1
-            glColor3fv(cores[x])
+            # glColor3fv(cores[x])
+            glTexCoord2fv(textureCoordinates[i_vertex])
             glVertex3fv(vertices[vertex])
     glEnd()
 
@@ -142,6 +151,7 @@ def Ampulheta():
     # vem instruções
     for aresta in arestas:
         for vertex in aresta:
+
             glVertex3fv(vertices[vertex])  # Informa o vertice
             # para a aresta
     glEnd()
@@ -157,13 +167,13 @@ def main():
 
     # glMatrixMode(GL_PROJECTION)
     glMatrixMode(GL_MODELVIEW)
-    gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
+    gluPerspective(75, (display[0]/display[1]), 0.1, 50.0)
 
     glMatrixMode(GL_MODELVIEW)
     glTranslatef(0, 0, -5)
 
     glLight(GL_LIGHT0, GL_POSITION, (5, 5, 5, 1))
-    glLightfv(GL_LIGHT0, GL_AMBIENT, (10, 0, 0, 1))
+    glLightfv(GL_LIGHT0, GL_AMBIENT, (0, 0, 0, 1))
     glLightfv(GL_LIGHT0, GL_DIFFUSE, (1, 1, 1, 1))
 
     glEnable(GL_DEPTH_TEST)
@@ -174,7 +184,7 @@ def main():
                 pygame.quit()
                 quit()
 
-        #glRotatef(1, 3, 1, 1)
+        # glRotatef(1, 3, 1, 1)
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
@@ -215,6 +225,7 @@ def main():
         glEnable(GL_COLOR_MATERIAL)
         glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
 
+        carregaTextura()
         Ampulheta()
 
         glDisable(GL_LIGHT0)
